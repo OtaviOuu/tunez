@@ -70,7 +70,7 @@ defmodule TunezWeb.Artists.IndexLive do
     ~H"""
     <div id={"artist-#{@artist.id}"} data-role="artist-card" class="relative mb-2">
       <.link navigate={~p"/artists/#{@artist.id}"}>
-        <.cover_image />
+        <.cover_image image={@artist.cover_image_url} />
       </.link>
     </div>
     <p class="flex justify-between">
@@ -82,6 +82,7 @@ defmodule TunezWeb.Artists.IndexLive do
         {@artist.name}
       </.link>
     </p>
+    <.artist_card_album_info artist={@artist} />
     """
   end
 
@@ -185,7 +186,9 @@ defmodule TunezWeb.Artists.IndexLive do
     [
       {"recently updated", "-updated_at"},
       {"recently added", "-inserted_at"},
-      {"name", "name"}
+      {"name", "name"},
+      {"number of albums", "-album_count"},
+      {"latest album release", "--latest_album_year_released"}
     ]
   end
 
