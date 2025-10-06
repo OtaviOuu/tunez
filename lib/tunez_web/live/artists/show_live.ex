@@ -3,26 +3,12 @@ defmodule TunezWeb.Artists.ShowLive do
 
   require Logger
 
-  def mount(_params, _session, socket) do
-    {:ok, socket}
-  end
-
   def handle_params(%{"id" => id}, _url, socket) do
-    artist = Tunez.Music.read_artists_by_id!(id)
-
-    albums = [
-      %{
-        id: "test-album-1",
-        name: "Test Album",
-        year_released: 2023,
-        cover_image_url: nil
-      }
-    ]
+    artist = Tunez.Music.read_artists_by_id!(id, load: [:albums])
 
     socket =
       socket
       |> assign(:artist, artist)
-      |> assign(:albums, albums)
       |> assign(:page_title, artist.name)
 
     {:noreply, socket}
@@ -58,7 +44,7 @@ defmodule TunezWeb.Artists.ShowLive do
       </.button_link>
 
       <ul class="mt-10 space-y-6 md:space-y-10">
-        <li :for={album <- @albums}>
+        <li :for={album <- @artist.albums}>
           <.album_details album={album} />
         </li>
       </ul>

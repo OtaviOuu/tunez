@@ -1,4 +1,4 @@
-defmodule Tunez.Repo.Migrations.CreateAlbuns do
+defmodule Tunez.Repo.Migrations.AddIdToAlbum do
   @moduledoc """
   Updates resources based on their most recent snapshots.
 
@@ -9,6 +9,7 @@ defmodule Tunez.Repo.Migrations.CreateAlbuns do
 
   def up do
     create table(:albums, primary_key: false) do
+      add :id, :uuid, null: false, default: fragment("gen_random_uuid()"), primary_key: true
       add :name, :text, null: false
       add :year_released, :bigint, null: false
       add :cover_image_url, :text
