@@ -3,7 +3,11 @@ defmodule Tunez.Music.Album do
     otp_app: :tunez,
     domain: Tunez.Music,
     data_layer: AshPostgres.DataLayer,
-    extensions: [AshPhoenix]
+    extensions: [AshJsonApi.Resource, AshPhoenix]
+
+  json_api do
+    type "album"
+  end
 
   postgres do
     table "albums"
@@ -50,14 +54,17 @@ defmodule Tunez.Music.Album do
 
     attribute :name, :string do
       allow_nil? false
+      public? true
     end
 
     attribute :year_released, :integer do
       allow_nil? false
+      public? true
     end
 
     attribute :cover_image_url, :string do
       allow_nil? true
+      public? true
     end
 
     create_timestamp :inserted_at
@@ -74,12 +81,12 @@ defmodule Tunez.Music.Album do
     calculate :years_ago, :integer, expr(2025 - year_released)
   end
 
+  def next_year do
+    Date.utc_today().year + 1
+  end
+
   identities do
     identity :unique_album_name_per_artist, [:name, :artist_id],
       message: "has already been taken for this artist"
-  end
-
-  def next_year do
-    Date.utc_today().year + 1
   end
 end
