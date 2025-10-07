@@ -16,8 +16,17 @@ defmodule TunezWeb.Albums.FormLive do
   end
 
   def mount(%{"artist_id" => artist_id}, _session, socket) do
-    artist = Tunez.Music.read_artists_by_id!(artist_id)
-    form = Tunez.Music.form_to_create_album(artist_id)
+    artist =
+      Tunez.Music.read_artists_by_id!(artist_id,
+        actor: socket.assigns.current_user
+      )
+
+    form =
+      Tunez.Music.form_to_create_album(
+        artist_id,
+        actor: socket.assigns.current_user
+      )
+      |> AshPhoenix.Form.ensure_can_submit!()
 
     socket =
       socket

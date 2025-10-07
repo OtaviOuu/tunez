@@ -4,7 +4,11 @@ defmodule TunezWeb.Artists.ShowLive do
   require Logger
 
   def handle_params(%{"id" => id}, _url, socket) do
-    artist = Tunez.Music.read_artists_by_id!(id, load: [:albums])
+    artist =
+      Tunez.Music.read_artists_by_id!(id,
+        load: [:albums],
+        actor: socket.assigns.current_user
+      )
 
     socket =
       socket
@@ -24,7 +28,7 @@ defmodule TunezWeb.Artists.ShowLive do
         <:subtitle :if={@artist.previus_names != []}>
           formerly know as {Enum.join(@artist.previus_names, ", ")}
         </:subtitle>
-        <:action>
+        <:action :if={Tunez.Music.can_delete_artist?(@current_user, @artist)}>
           <.button_link
             kind="error"
             inverse
@@ -34,7 +38,7 @@ defmodule TunezWeb.Artists.ShowLive do
             Delete Artist
           </.button_link>
         </:action>
-        <:action>
+        <:action :if={Tunez.Music.can_update_artist?(@current_user, @artist)}>
           <.button_link navigate={~p"/artists/#{@artist.id}/edit"} kind="primary" inverse>
             Edit Artist
           </.button_link>
@@ -137,7 +141,9 @@ defmodule TunezWeb.Artists.ShowLive do
   end
 
   def handle_event("destroy-artist", _params, socket) do
-    case Tunez.Music.delete_artist(socket.assigns.artist) do
+    case Tunez.Music.delete_artist(socket.assigns.artist,
+           actor: socket.assigns.current_user
+         ) do
       :ok ->
         {:noreply,
          socket

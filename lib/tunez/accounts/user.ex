@@ -4,7 +4,7 @@ defmodule Tunez.Accounts.User do
     domain: Tunez.Accounts,
     data_layer: AshPostgres.DataLayer,
     authorizers: [Ash.Policy.Authorizer],
-    extensions: [AshJsonApi.Resource, AshAuthentication]
+    extensions: [AshGraphql.Resource, AshJsonApi.Resource, AshAuthentication]
 
   authentication do
     add_ons do
@@ -54,6 +54,10 @@ defmodule Tunez.Accounts.User do
     end
   end
 
+  graphql do
+    type :user
+  end
+
   json_api do
     type "user"
   end
@@ -71,6 +75,10 @@ defmodule Tunez.Accounts.User do
       argument :subject, :string, allow_nil?: false
       get? true
       prepare AshAuthentication.Preparations.FilterBySubject
+    end
+
+    update :set_role do
+      accept [:role]
     end
 
     update :change_password do
@@ -272,10 +280,19 @@ defmodule Tunez.Accounts.User do
     bypass AshAuthentication.Checks.AshAuthenticationInteraction do
       authorize_if always()
     end
+
+    policy action([:register_with_password, :sign_in_with_password]) do
+      authorize_if always()
+    end
   end
 
   attributes do
     uuid_primary_key :id
+
+    attribute :role, Tunez.Accounts.Role do
+      allow_nil? false
+      default :user
+    end
 
     attribute :email, :ci_string do
       allow_nil? false
