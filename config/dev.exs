@@ -1,6 +1,6 @@
 import Config
 config :ash, policies: [show_policy_breakdowns?: true]
-
+config :ash_authentication, debug_authentication_failures?: true
 # Configure your database
 config :tunez, Tunez.Repo,
   username: "postgres",
@@ -64,7 +64,7 @@ config :tunez, TunezWeb.Endpoint,
   ]
 
 # Enable dev routes for dashboard and mailbox
-config :tunez, dev_routes: true
+config :tunez, dev_routes: true, token_signing_secret: "FDWxVGJHbvt6wW4ql0vDhvW6F18C3Hri"
 
 # Do not include metadata nor timestamps in development logs
 config :logger, :default_formatter, format: "[$level] $message\n"
